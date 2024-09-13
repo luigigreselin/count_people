@@ -1,0 +1,5 @@
+variables:
+- name: pythonVersion
+  value: 3.11
+- name: vmImage
+  value: ubuntu-20.04
