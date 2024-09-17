@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from ultralytics import YOLO # type: ignore
+from ultralytics import YOLO  # type: ignore
 
 app = FastAPI()
 
@@ -11,9 +11,12 @@ async def root():
 
 model = YOLO("yolov8n.pt")
 
-@app.post("/detect/")
-async def detect_objects(detected_class: list[int]=[0]):
 
- results = model.predict(source="0", show=True, classes=detected_class, conf=0.8)  # Display preds. Accepts all YOLO predict arguments
- 
- return {"detections": results}
+@app.post("/detect/")
+async def detect_objects(detected_class: list[int] = [0]):
+
+    results = model.predict(
+        source="0", show=True, classes=detected_class, conf=0.8
+    )  # Display preds. Accepts all YOLO predict arguments
+
+    return {"detections": results}
