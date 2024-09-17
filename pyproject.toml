@@ -69,6 +69,10 @@ readme = "README.md"
 python = "3.11.*"
 ultralytics = "^8.2.92"
 torch = "^2.4.1"
+fastapi = "^0.114.1"
+uvicorn = "^0.30.6"
+python-multipart = "^0.0.9"
+pydantic = "1.10.2"
 
 
 [tool.poetry.group.dev.dependencies]
