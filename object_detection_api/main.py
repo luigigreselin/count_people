@@ -15,10 +15,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from PIL import Image
 from ultralytics import YOLO  # type: ignore
-from utils.wb_manager import ConnectionManager
 
 app = FastAPI()
-websocket_manager = ConnectionManager()
 model = YOLO('yolov8n.pt')
 templates = Jinja2Templates(directory='./static')
 
