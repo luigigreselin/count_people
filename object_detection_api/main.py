@@ -14,7 +14,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from PIL import Image
-from ultralytics import YOLO  # type: ignore
+from ultralytics import YOLO
 
 app = FastAPI()
 model = YOLO('yolov8n.pt')
@@ -31,7 +31,7 @@ async def index(request: Request) -> Any:
 
 
 @app.post('/upload')
-async def upload_image(file: UploadFile = File(...)):
+async def upload_image(file: UploadFile = File(...)) -> dict[str, Any]:
     # Read and process the uploaded image
     image_bytes = await file.read()
     image = np.frombuffer(image_bytes, dtype=np.uint8)

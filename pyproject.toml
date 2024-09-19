@@ -73,6 +73,7 @@ fastapi = "^0.114.1"
 uvicorn = {extras = ["standard"], version = "^0.30.6"}
 python-multipart = "^0.0.9"
 pydantic = "1.10.2"
+numpy = "^1.9.0"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -81,4 +82,3 @@ jupyter = "^1.1.1"
 pytest = "^7.1.1"
 pytest-cov = "^3.0.0"
 pytest-clarity = "^1.0.1"
-mypy = "^0.942"
