@@ -24,8 +24,8 @@ dragDropArea.addEventListener("drop", async (e) => {
             return;
         }
         const formData = new FormData();  // Initialize FormData correctly
-        formData.append('file', file);  
-        
+        formData.append('file', file);
+
         try {
             const response = await fetch('/upload', {
                 method: 'POST',
@@ -42,7 +42,7 @@ dragDropArea.addEventListener("drop", async (e) => {
         } catch (error) {
             output.innerHTML = `<p>Error: ${error.message}</p>`;
         }
-        
+
         const reader = new FileReader();
         reader.onload = (e) => {
             const img = document.createElement("img");
