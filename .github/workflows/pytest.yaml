@@ -44,4 +44,3 @@ jobs:
     - name: Run test suite
       run: |-
         poetry run pytest tests
-
