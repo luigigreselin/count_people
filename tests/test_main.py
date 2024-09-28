@@ -5,8 +5,9 @@ from io import BytesIO
 import cv2
 import numpy as np
 import pytest
-from count_people.object_detection_api.main import app
 from fastapi.testclient import TestClient
+
+from object_detection_api.main import app
 
 client = TestClient(app)
 
