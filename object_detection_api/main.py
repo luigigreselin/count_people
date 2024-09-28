@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import base64
 from io import BytesIO
-from typing import Any
 from pathlib import Path
+from typing import Any
 
 import cv2
 import numpy as np
@@ -24,7 +24,10 @@ model = YOLO('yolov8n.pt')
 templates = Jinja2Templates(directory=str(Path(BASE_DIR, 'static')))
 
 
-app.mount('/static', StaticFiles(directory=str(Path(BASE_DIR, "static/"))), name='static')
+app.mount(
+    '/static', StaticFiles(directory=str(Path(BASE_DIR, 'static/'))),
+    name='static',
+)
 
 
 @app.get('/', response_class=HTMLResponse)
