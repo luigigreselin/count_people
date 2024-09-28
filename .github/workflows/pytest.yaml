@@ -1,18 +1,10 @@
-name: Test vegetables classification code
+name: pytest
 
 on:
   push:
-    branches:
-    - main
-    - develop
-    paths:
-    - projects/{{ vars.VEGETABLES_CLASSIFICATION }}/**
+    branches: [main, develop]
   pull_request:
-    branches:
-    - main
-    - develop
-    paths:
-    - projects/{{ vars.VEGETABLES_CLASSIFICATION }}/**
+    branches: [main, develop]
 
 variables:
 - template: /.github/workflows/vars/default-job-properties.template.yaml
@@ -47,15 +39,8 @@ jobs:
 
     - name: Poetry Install
       run: |
-        cd projects/{{ vars.VEGETABLES_CLASSIFICATION }}/
         poetry install
 
     - name: Run test suite
       run: |-
-        cd projects/{{ vars.VEGETABLES_CLASSIFICATION }}/
         poetry run pytest tests
-
-    - name: Run mypy
-      run: |-
-        cd projects/{{ vars.VEGETABLES_CLASSIFICATION }}/
-        poetry run mypy

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 from io import BytesIO
+from pathlib import Path
 from typing import Any
 
 import cv2
@@ -16,11 +17,17 @@ from fastapi.templating import Jinja2Templates
 from PIL import Image
 from ultralytics import YOLO
 
+BASE_DIR = Path(__file__).resolve().parent
 app = FastAPI()
 model = YOLO('yolov8n.pt')
-templates = Jinja2Templates(directory='./static')
 
-app.mount('/static', StaticFiles(directory='static'), name='static')
+templates = Jinja2Templates(directory=str(Path(BASE_DIR, 'static')))
+
+
+app.mount(
+    '/static', StaticFiles(directory=str(Path(BASE_DIR, 'static/'))),
+    name='static',
+)
 
 
 @app.get('/', response_class=HTMLResponse)
