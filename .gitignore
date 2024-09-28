@@ -1,7 +1,20 @@
-**/__pycache__ 
-runs/
+# poetry files
+.venv/
+
+# pytest files
+.pytest_cache/
+
+# pre-commit files
+.mypy_cache/
+
+# python files
+**/__pycache__
+
+# model
 yolov8n.pt
-poetry.lock
+
+# other files
+runs/
 **/.DS_Store
 Aerial_Vision_Analysis_Tool_v1.0/backend/model/sam2_b.pt
 output_videos/processed_box_video.mp4
