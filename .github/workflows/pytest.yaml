@@ -39,15 +39,9 @@ jobs:
 
     - name: Poetry Install
       run: |
-        cd projects/{{ vars.VEGETABLES_CLASSIFICATION }}/
         poetry install
 
     - name: Run test suite
       run: |-
-        cd projects/{{ vars.VEGETABLES_CLASSIFICATION }}/
         poetry run pytest tests
 
-    - name: Run mypy
-      run: |-
-        cd projects/{{ vars.VEGETABLES_CLASSIFICATION }}/
-        poetry run mypy
