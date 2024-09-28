@@ -2,20 +2,22 @@ from __future__ import annotations
 
 from io import BytesIO
 
-import cv2
 import numpy as np
 import pytest
 from count_people.object_detection_api.main import app
 from fastapi.testclient import TestClient
+from PIL import Image
 
 client = TestClient(app)
 
 
 @pytest.fixture(scope='session')
 def image() -> BytesIO:
-    image = np.zeros((100, 100, 3), dtype=np.uint8)
-    _, image_encoded = cv2.imencode('.jpg', image)
-    return BytesIO(image_encoded.tobytes())
+    array = np.zeros((100, 100, 3), dtype=np.uint8)
+    img = Image.fromarray(array)
+    img_bytes = BytesIO()
+    img.save(img_bytes, format='JPEG')
+    return img_bytes
 
 
 def test_get():
