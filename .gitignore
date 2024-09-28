@@ -1,0 +1,8 @@
+**/__pycache__ 
+runs/
+yolov8n.pt
+poetry.lock
+**/.DS_Store
+Aerial_Vision_Analysis_Tool_v1.0/backend/model/sam2_b.pt
+output_videos/processed_box_video.mp4
+output_videos/processed_video.mp4
