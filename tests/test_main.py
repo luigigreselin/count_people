@@ -4,9 +4,10 @@ from io import BytesIO
 
 import numpy as np
 import pytest
-from count_people.object_detection_api.main import app
 from fastapi.testclient import TestClient
 from PIL import Image
+
+from object_detection_api.main import app
 
 client = TestClient(app)
 
