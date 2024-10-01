@@ -19,3 +19,4 @@ runs/
 Aerial_Vision_Analysis_Tool_v1.0/backend/model/sam2_b.pt
 output_videos/processed_box_video.mp4
 output_videos/processed_video.mp4
+temp_video.mp4
