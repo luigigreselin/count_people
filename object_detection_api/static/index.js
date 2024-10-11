@@ -58,39 +58,56 @@ async function handleImageUpload(file) {
     }
 }
 
-// Function to handle video upload
 async function handleVideoUpload(file) {
-    const formData = new FormData();
-    formData.append('file', file);
+    const chunkSize = 1024 * 1024; // 1MB chunk size
+    let currentChunk = 0;  // Track the current chunk
 
-    try {
-        // Function to handle streaming the video in chunks
-        const fetchVideoChunk = async (rangeStart = 0, chunkSize = 1024 * 1024) => {
-            const rangeHeader = `bytes=${rangeStart}-${rangeStart + chunkSize - 1}`;
-            const response = await fetch('/video', {
-                method: 'POST',
-                headers: {
-                    'Range': rangeHeader
-                },
-                body: formData
-            });
+    const fetchVideoChunk = async (rangeStart) => {
+        // Calculate the end of the chunk range
+        const rangeEnd = Math.min(file.size, rangeStart + chunkSize);
+        console.log(`Uploading chunk: Start = ${rangeStart}, End = ${rangeEnd}`);
+        // Slice the file into a chunk
+        const fileChunk = file.slice(rangeStart, rangeEnd);
 
-            if (response.ok) {
-                const videoBlob = await response.blob();  // Get the video data as a blob
-                const videoURL = URL.createObjectURL(videoBlob);  // Create a URL for the video blob
+        // Create a new FormData for each chunk
+        const formData = new FormData();
+        formData.append('file', fileChunk);  // Append only the current chunk
 
-                // Append the video to the DOM
+        // Send the chunk via POST request
+        const rangeHeader = `bytes=${rangeStart}-${rangeEnd - 1}`;  // Set content range
+        const response = await fetch('/video', {
+            method: 'POST',
+            headers: {
+                'Range': rangeHeader
+            },
+            body: formData
+        });
+
+        if (response.ok) {
+            const videoBlob = await response.blob();  // Get the video data as a blob
+            const videoURL = URL.createObjectURL(videoBlob);  // Create a URL for the video blob
+
+            // Append the video to the DOM if it's the first chunk
+            if (currentChunk === 0) {
                 const videoElement = document.createElement("video");
                 videoElement.src = videoURL;
                 videoElement.controls = true;
                 output_image.appendChild(videoElement);
-            } else {
-                output_image.innerHTML = `<p>Error fetching video chunk</p>`;
             }
-        };
 
-        // Fetch the first chunk (or adjust the chunk size as needed)
-        await fetchVideoChunk();
+            // Fetch the next chunk if the video is not fully uploaded
+            if (rangeEnd < file.size) {
+                currentChunk++;
+                await fetchVideoChunk(rangeEnd);  // Fetch the next chunk
+            }
+        } else {
+            output_image.innerHTML = `<p>Error fetching video chunk</p>`;
+        }
+    };
+
+    try {
+        // Start fetching the first chunk
+        await fetchVideoChunk(0);
     } catch (error) {
         output_image.innerHTML = `<p>Error: ${error.message}</p>`;
     }

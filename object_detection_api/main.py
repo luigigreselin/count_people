@@ -71,32 +71,59 @@ async def upload_image(file: UploadFile = File(...)) -> dict[str, Any]:
     return {'detections': detections, 'image': img_base64}
 
 
-@app.post('/video')
-async def video_endpoint(
-    file: UploadFile = File(...),
-    range: str = Header(None),
-):
+# @app.post('/video')
+# async def video_endpoint(
+#     file: UploadFile = File(...),
+#     range: str = Header(None),
+# ): 
+#     print("RANGE IS", range)
+#     start_str, end_str = range.replace('bytes=', '').split('-')
+#     start = int(start_str)
+#     end = int(end_str) if end_str else start + CHUNK_SIZE
+#     print('START IS', start, "END IS", end)
+#     # end = end if end else start + CHUNK_SIZE
+#     file.file.seek(0, os.SEEK_END)
+#     filesize = file.file.tell()
+#     print('FILESIZE', filesize)
+#     # end = min(end, filesize)
+#     print(f"NEW END IS {end}")
+#     file.file.seek(start)
 
-    start_str, end_str = range.replace('bytes=', '').split('-')
-    start = int(start_str)
-    end = int(end_str)
-    end = end if end else start + CHUNK_SIZE
-    file.file.seek(0, os.SEEK_END)
-    filesize = file.file.tell()
-    file.file.seek(start)
+#     # if end > filesize:
+#     #     end = filesize
+#     data = file.file.read(end - start)
+#     print("LAST", end - start, end, start)
 
-    if end > filesize:
-        end = filesize
-    data = file.file.read(end - start)
+#     headers = {
+#         'Content-Range': f'bytes {start}-{end-1}/{filesize}',
+#         'Accept-Ranges': 'bytes',
+#         'Content-Length': str(end - start),
+#     }
 
-    headers = {
-        'Content-Range': f'bytes {start}-{end}/{filesize}',
-        'Accept-Ranges': 'bytes',
-        'Content-Length': str(end - start),
-    }
+#     return Response(
+#         data, status_code=206,
+#         headers=headers,
+#         media_type='video/mp4',
+#     )
 
-    return Response(
-        data, status_code=206,
-        headers=headers,
-        media_type='video/mp4',
-    )
+
+video_path = Path("./video.mp4")
+
+@app.get("/video")
+async def video_endpoint(range: str = Header(None)):
+    start, end = range.replace("bytes=", "").split("-")
+    print("RAGE", range)
+    start = int(start)
+    print("OLD END", end)
+    end = int(end) if end else start + CHUNK_SIZE
+    print("START", start, "END", end)
+    with open(video_path, "rb") as video:
+        video.seek(start)
+        data = video.read(end - start)
+        filesize = str(video_path.stat().st_size)
+        print("SIZE", filesize)
+        headers = {
+            'Content-Range': f'bytes {str(start)}-{str(end)}/{filesize}',
+            'Accept-Ranges': 'bytes'
+        }
+        return Response(data, status_code=206, headers=headers, media_type="video/mp4")
