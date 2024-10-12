@@ -3,17 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drag and Drop Image Upload</title>
+    <title>Object Identification YOLO</title>
     <link rel="stylesheet" href="/static/index.css">
     <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <style>
+        #output-image {
+            width: 800px;
+            margin-top: 20px;
+        }
+
+        #output-image img {
+            width: 800px;
+            max-width: 100%;
+        }
+
+        #drag-drop-area {
+            margin-top: 20px;
+            padding: 10px;
+            border: 2px dashed #ccc;
+            text-align: center;
+            font-size: 1.2em;
+        }
+
+        #drag-drop-area.hover {
+            background-color: #f0f0f0;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <div class="drag-drop-area" id="dragDropArea">
+        <h2>Object Identification App</h2>
+        <br></br>
+        <p>Upload image or video using below box</p>
+
+        <!-- Drop zone for drag-and-drop functionality -->
+        <div class="drag-drop-area" id="drag-drop-area">
             <p>Drag & Drop your files here</p>
         </div>
-        <div id="output_image"></div>
-        <div id="output_analysis"></div>
+
+        <div id="output-image"></div>
     </div>
     <script src="/static/index.js?v=1.0"></script>
 </body>
