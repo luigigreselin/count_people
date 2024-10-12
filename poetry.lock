@@ -2217,6 +2217,20 @@ files = [
 ]
 
 [[package]]
+name = "pafy"
+version = "0.5.5"
+description = "Retrieve YouTube content and metadata"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pafy-0.5.5-py2.py3-none-any.whl", hash = "sha256:769e35aa6988686d47fa2ab235d15c9952c7873c470f6a6b05cf6bcd93e62515"},
+    {file = "pafy-0.5.5.tar.gz", hash = "sha256:364f1d1312c89582d97dc7225cf6858cde27cb11dfd64a9c2bab1a2f32133b1e"},
+]
+
+[package.extras]
+youtube-dl-backend = ["youtube-dl"]
+
+[[package]]
 name = "pandas"
 version = "2.2.3"
 description = "Powerful data structures for data analysis, time series, and statistics"
@@ -4091,7 +4105,18 @@ files = [
     {file = "widgetsnbextension-4.0.13.tar.gz", hash = "sha256:ffcb67bc9febd10234a362795f643927f4e0c05d9342c727b65d2384f8feacb6"},
 ]
 
+[[package]]
+name = "youtube-dl"
+version = "2021.12.17"
+description = "YouTube video downloader"
+optional = false
+python-versions = "*"
+files = [
+    {file = "youtube_dl-2021.12.17-py2.py3-none-any.whl", hash = "sha256:f1336d5de68647e0364a47b3c0712578e59ec76f02048ff5c50ef1c69d79cd55"},
+    {file = "youtube_dl-2021.12.17.tar.gz", hash = "sha256:bc59e86c5d15d887ac590454511f08ce2c47698d5a82c27bfe27b5d814bbaed2"},
+]
+
 [metadata]
 lock-version = "2.0"
 python-versions = "3.11.*"
-content-hash = "40aae26933e8b22369094637c0d7cc6e22fae7c1b26d0a91e3a2b930b2d3021f"
+content-hash = "4e17a540a727ecf94e9ae49e90cbc7ed47adcdd32dc298a98a20c5948bd7c93d"
