@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import base64
-import os
 from collections import Counter
 from io import BytesIO
 from pathlib import Path
@@ -11,7 +10,6 @@ import cv2
 import numpy as np
 from fastapi import FastAPI
 from fastapi import File
-from fastapi import Header
 from fastapi import Request
 from fastapi import Response
 from fastapi import UploadFile
@@ -22,7 +20,7 @@ from PIL import Image
 from ultralytics import YOLO
 
 BASE_DIR = Path(__file__).resolve().parent
-CHUNK_SIZE = 1024*1024
+CHUNK_SIZE = 1024 * 1024
 app = FastAPI()
 model = YOLO('yolov8n.pt')
 
@@ -74,23 +72,16 @@ async def upload_image(file: UploadFile = File(...)) -> dict[str, Any]:
 @app.post('/video')
 async def video_endpoint(
     file: UploadFile = File(...),
-    range: str = Header(None),
 ):
 
-    start_str, end_str = range.replace('bytes=', '').split('-')
-    start = int(start_str)
-    end = int(end_str)
-    end = end if end else start + CHUNK_SIZE
-    file.file.seek(0, os.SEEK_END)
-    filesize = file.file.tell()
+    start = 0
+    end = file.size
     file.file.seek(start)
 
-    if end > filesize:
-        end = filesize
-    data = file.file.read(end - start)
+    data = file.file.read(end)
 
     headers = {
-        'Content-Range': f'bytes {start}-{end}/{filesize}',
+        'Content-Range': f'bytes {start}-{end}/{end}',
         'Accept-Ranges': 'bytes',
         'Content-Length': str(end - start),
     }

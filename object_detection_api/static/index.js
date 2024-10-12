@@ -1,5 +1,3 @@
-const videoPlayer = document.getElementById('video-player');
-const videoSource = document.getElementById('video-source');
 const dragDropArea = document.getElementById('drag-drop-area');
 const outputImage = document.getElementById('output-image');
 
@@ -32,7 +30,7 @@ dragDropArea.addEventListener('drop', async (e) => {
     } else if (fileType.startsWith('video/') && (testVideo.canPlayType(fileType) === 'probably' || testVideo.canPlayType(fileType) === 'maybe')) {
         await handleVideoUpload(file);
     } else {
-        let alert_msg = 'Input file format (" + file.type + ") is not allowed or not supported by your browser.'
+        let alert_msg = 'Input file format (' + file.type + ') is not allowed or not supported by your browser.'
         alert(alert_msg);
         return;
     }
@@ -59,52 +57,83 @@ async function handleImageUpload(file) {
     }
 }
 
-// Function to handle video upload
+// Function to upload chunk to server and get processed chunk
 async function handleVideoUpload(file) {
-    const formData = new FormData();
-    formData.append('file', file);
+    const chunkSize = 1024 * 1024;  // 1MB chunks
+    let start = 0;
+    let processedChunks = [];
 
-    try {
-        // Function to handle streaming the video in chunks
-        const fetchVideoChunk = async (rangeStart = 0, chunkSize = 1024 * 1024) => {
-            const rangeHeader = `bytes=${rangeStart}-${rangeStart + chunkSize - 1}`;
-            const response = await fetch('/video', {
-                method: 'POST',
-                headers: {
-                    'Range': rangeHeader
-                },
-                body: formData
-            });
+    // Create a video element
+    const videoElement = document.createElement('video');
+    videoElement.controls = true;
+    videoElement.width = 600;
+    videoElement.height = 400;
 
-            if (response.ok) {
-                const videoBlob = await response.blob();  // Get the video data as a blob
-                const videoURL = URL.createObjectURL(videoBlob);  // Create a URL for the video blob
+    // Add the video element to the DOM
+    outputImage.appendChild(videoElement);
 
-                // Create video element dynamically
-                const videoElement = document.createElement('video');
-                videoElement.controls = true;  // Add controls like play, pause, etc.
-                videoElement.width = 600;
-                videoElement.height = 400;
+    // Function to read and upload file chunks
+    async function readAndUploadChunk() {
+        const reader = new FileReader();
+        const blob = file.slice(start, start + chunkSize);
 
-                const sourceElement = document.createElement('source');
-                sourceElement.src = videoURL;
-                sourceElement.type = file.type;
-                videoElement.appendChild(sourceElement);
+        reader.onload = async (e) => {
+            const chunk = e.target.result;
 
-                // Add the video element to the DOM
-                outputImage.appendChild(videoElement)
+            try {
+                const processedChunk = await uploadAndProcessChunk(chunk);
+                processedChunks.push(processedChunk);
+                updateVideoSource();
+                start += chunk.byteLength;
 
-                // Play the video automatically
-                videoElement.play();
-
-            } else {
-                alert('Only .mp4 and .mov files are supported!');
+                if (start < file.size) {
+                    readAndUploadChunk();
+                } else {
+                    console.log('Upload completed');
+                }
+            } catch (error) {
+                console.error('Error uploading/processing chunk:', error);
             }
         };
 
-        // Fetch the first chunk (or adjust the chunk size as needed)
-        await fetchVideoChunk();
-    } catch (error) {
-        outputImage.innerHTML = `<p>Error: ${error.message}</p>`;
+        reader.readAsArrayBuffer(blob);
     }
+
+    // Function to upload chunk to server and get processed chunk
+    async function uploadAndProcessChunk(chunk) {
+        const formData = new FormData();
+        formData.append('file', new Blob([chunk]), file.name);
+
+        try {
+            const response = await fetch('/video', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+            }
+
+            return await response.blob();
+        } catch (error) {
+            console.error('Error in uploadAndProcessChunk:', error);
+            return null;
+        }
+    }
+
+    // Function to update video source with processed chunks
+    function updateVideoSource() {
+        const blob = new Blob(processedChunks);
+        const videoURL = URL.createObjectURL(blob);
+
+        videoElement.src = videoURL;
+    }
+
+    // Start reading, uploading, and processing chunks
+    readAndUploadChunk();
+
+    // Play the video when there's enough data
+    videoElement.addEventListener('canplay', () => {
+        videoElement.play();
+    });
 }
