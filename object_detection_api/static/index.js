@@ -1,12 +1,32 @@
 const dragDropArea = document.getElementById('drag-drop-area');
+const urlInput = document.getElementById('url-input');
 const outputImage = document.getElementById('output-image');
 
-// Add event listener for dragover event
+
+// Add event listener for text insert event
+urlInput.addEventListener('change', function() {
+    // Regular expression for basic URL validation
+    const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?$/;
+    console.log('URL populated')
+
+    // Clear previous output
+    outputImage.innerHTML = "";
+
+    if (urlPattern.test(this.value)) {
+        identifyUrlType(this.value)
+    } else {
+        alert('Please enter a valid URL (e.g., https://example.com)');
+        this.value = '';
+    }
+});
+
+// Add event listener for drag-over event
 dragDropArea.addEventListener('dragover', (e) => {
     e.preventDefault();
     dragDropArea.classList.add('hover');
 });
 
+// Add event listener for drag-leave event
 dragDropArea.addEventListener('dragleave', () => {
     dragDropArea.classList.remove('hover');
 });
@@ -36,10 +56,59 @@ dragDropArea.addEventListener('drop', async (e) => {
     }
 });
 
+async function identifyUrlType(url) {
+    try {
+        // Decode the URL first to handle encoded characters
+        const decodedUrl = decodeURIComponent(url);
+        const lowercaseUrl = decodedUrl.toLowerCase();
+        let urlType = '';
+        console.log('Decoded URL:', decodedUrl);
+
+        // Common image extensions
+        const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg'];
+
+        // Common video extensions
+        const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.avi', '.wmv', '.flv', '.mkv'];
+
+        if (videoExtensions.some(ext => lowercaseUrl.endsWith(ext))) {
+            console.log('Found extensions:', imageExtensions.filter(ext => lowercaseUrl.endsWith(ext)));
+            urlType = 'video';
+            console.log('URL detected type:', urlType);
+        } else if (imageExtensions.some(ext => lowercaseUrl.endsWith(ext))) {
+            console.log('Found extensions:', imageExtensions.filter(ext => lowercaseUrl.endsWith(ext)));
+            urlType = 'image';
+            console.log('URL detected type:', urlType);
+
+            // Fetch the image
+            const response = await fetch(lowercaseUrl);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            // Get the blob data
+            const blob = await response.blob();
+            console.log('Fetch image type:', blob.type);
+
+            handleImageUpload(blob)
+        } else {
+            urlType = 'unknown';
+            console.log('URL detected type:', urlType);
+        }
+
+        return urlType;
+
+    } catch (error) {
+        console.error('Error decoding URL:', error);
+        alert('Error processing URL');
+        return 'error';
+    }
+}
+
 // Function to handle image upload
 async function handleImageUpload(file) {
     const formData = new FormData();
     formData.append('file', file);
+    console.log('Drop image type:', file.type);
     try {
         const response = await fetch('/image', {
             method: 'POST',
